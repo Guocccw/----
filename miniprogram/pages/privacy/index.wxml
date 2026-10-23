@@ -1,0 +1,45 @@
+<view class="page privacy">
+  <view class="privacy__tabs">
+    <view class="privacy__tab {{tab === 'privacy' ? 'privacy__tab--active' : ''}}" data-tab="privacy" bindtap="onTab">隐私政策</view>
+    <view class="privacy__tab {{tab === 'terms' ? 'privacy__tab--active' : ''}}" data-tab="terms" bindtap="onTab">用户协议</view>
+  </view>
+  <view class="privacy__updated">更新日期：{{updatedAt}}</view>
+
+  <view wx:if="{{tab === 'privacy'}}" class="card privacy__body">
+    <view class="privacy__h">一、我们收集什么</view>
+    <view class="privacy__p">为了让你和朋友一起答题，我们会收集：微信 openid（用于识别账号）、你填写的昵称与头像、房间与对局记录（分数、答题结果、时间）。</view>
+    <view class="privacy__p">我们不会收集你的手机号、通讯录、地理位置，也不会读取微信好友关系。</view>
+
+    <view class="privacy__h">二、我们怎么使用</view>
+    <view class="privacy__p">昵称与头像用于房间座位、结算和排行榜展示；openid 用于登录识别与防重复计分；对局记录用于结算、周榜和异常排查。</view>
+
+    <view class="privacy__h">三、保存与删除</view>
+    <view class="privacy__p">对局记录默认保留 180 天，周榜数据保留 8 周，日志保留 30 天。你可以在「我的」中清除本地记录；如需删除账号数据，可通过客服联系我们。</view>
+
+    <view class="privacy__h">四、分享与第三方</view>
+    <view class="privacy__p">分享卡片只包含房间码和邀请文案，不包含你的 openid 或分数明细。我们不会向第三方出售或共享你的个人信息。</view>
+
+    <view class="privacy__h">五、未成年人</view>
+    <view class="privacy__p">本小程序不包含支付、广告或抽奖功能。未成年人使用时应由监护人指导。</view>
+
+    <view class="privacy__h">六、联系我们</view>
+    <view class="privacy__p">如对隐私政策有疑问，可通过小程序内的反馈入口联系我们。</view>
+  </view>
+
+  <view wx:else class="card privacy__body">
+    <view class="privacy__h">一、服务说明</view>
+    <view class="privacy__p">果果答题提供熟人房间答题服务。房间由房主创建，玩家通过房间码或分享卡片加入；本服务不提供随机匹配。</view>
+
+    <view class="privacy__h">二、使用规范</view>
+    <view class="privacy__p">请勿使用侮辱性昵称、头像，请勿利用外挂、脚本或篡改请求影响公平性。房主可管理房间成员；违规账号可能被限制使用。</view>
+
+    <view class="privacy__h">三、成绩与榜单</view>
+    <view class="privacy__p">成绩以服务端结算为准。异常对局、被判定为无效的对局不会计入周榜。排行榜为站内榜，不代表微信好友关系排名。</view>
+
+    <view class="privacy__h">四、免责</view>
+    <view class="privacy__p">因网络、设备、微信平台或不可抗力导致的中断，我们会尽力恢复，但不承诺对局一定完成。请合理安排游戏时间。</view>
+
+    <view class="privacy__h">五、变更</view>
+    <view class="privacy__p">我们可能根据功能或法规变化更新本协议，更新后会在小程序内展示。继续使用即表示接受更新后的条款。</view>
+  </view>
+</view>

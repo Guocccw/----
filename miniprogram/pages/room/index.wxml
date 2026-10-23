@@ -1,0 +1,83 @@
+<view class="page page--with-bar room">
+  <view wx:if="{{network === 'unstable'}}" class="offline-bar">
+    <text>网络不稳定，正在重连…</text>
+    <text class="link" bindtap="refresh">重连</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="room__loading">
+    <view class="skeleton" style="height:224rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:372rpx;"></view>
+  </view>
+
+  <view wx:elif="{{!view}}" class="empty">
+    <view class="empty__emoji">🍎</view>
+    <view class="empty__title">房间加载失败</view>
+    <view class="empty__desc">{{errorText || '房间可能已结束'}}</view>
+    <button class="btn btn--secondary" bindtap="onLeave">返回首页</button>
+  </view>
+
+  <block wx:elif="{{view}}">
+    <view class="card room__head">
+      <view class="row--between">
+        <text class="room__label">房间码</text>
+        <view class="row">
+          <button class="mini-btn" bindtap="onCopy">复制</button>
+          <button class="mini-btn mini-btn--share" open-type="share">分享</button>
+        </view>
+      </view>
+      <view class="room__code num">{{code}}</view>
+      <view class="room__chips">
+        <text class="chip">{{view.config.questionCount}} 题</text>
+        <text class="chip">{{view.config.durationSec}} 秒/题</text>
+        <text class="chip">最多 4 人</text>
+      </view>
+    </view>
+
+    <view class="seats">
+      <block wx:for="{{seats}}" wx:key="key">
+        <player-seat
+          wx:if="{{!item.empty}}"
+          player="{{item.player}}"
+          is-owner="{{item.isOwner}}"
+          is-self="{{item.isSelf}}"
+          online="{{item.online}}"
+          phase="{{view.status}}"
+          bind:tap="onSeatTap"
+        />
+        <button
+          wx:else
+          class="seat-empty"
+          open-type="share"
+        >
+          <text class="seat-empty__plus">＋</text>
+          <text class="seat-empty__text">邀请好友</text>
+        </button>
+      </block>
+    </view>
+
+    <view class="room__hint">
+      {{isOwner ? (activeCount === 1 ? '再邀请 1 位好友就能开始' : '人齐了，可以开始了') : '等待房主开始'}}
+    </view>
+  </block>
+
+  <view wx:if="{{view}}" class="bottom-bar">
+    <button
+      wx:if="{{isOwner}}"
+      class="btn btn--primary {{starting ? 'btn--loading' : ''}}"
+      hover-class="btn--primary-hover"
+      bindtap="onStart"
+      disabled="{{activeCount === 1 || starting}}"
+    >
+      <view wx:if="{{starting}}" class="spinner"></view>
+      <text>{{starting ? '开始中…' : '开始游戏'}}</text>
+    </button>
+    <button
+      wx:else
+      class="btn btn--secondary"
+      hover-class="btn--secondary-hover"
+      open-type="share"
+    >邀请好友</button>
+    <view class="room__count">{{activeCount}} / 4 人</view>
+    <view class="btn btn--danger-text room__leave" bindtap="onLeave">离开房间</view>
+  </view>
+</view>

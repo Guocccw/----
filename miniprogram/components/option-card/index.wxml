@@ -1,0 +1,14 @@
+<view
+  class="option option--{{state}}"
+  hover-class="{{state === 'default' ? 'option--pressed' : 'none'}}"
+  hover-stay-time="120"
+  bindtap="onTap"
+>
+  <view class="option__badge badge--{{letterClass}}">{{letter}}</view>
+  <text class="option__text">{{text}}</text>
+  <view wx:if="{{state === 'submitting'}}" class="option__spinner"></view>
+  <text wx:elif="{{state === 'correct'}}" class="option__status option__status--correct">✓ 正确</text>
+  <text wx:elif="{{state === 'wrong'}}" class="option__status option__status--wrong">✗ 你的选择</text>
+  <text wx:elif="{{state === 'submitted'}}" class="option__status">已提交</text>
+  <text wx:elif="{{state === 'selected'}}" class="option__status">已选</text>
+</view>

@@ -1,0 +1,8 @@
+<view
+  class="ring {{danger ? 'ring--danger' : ''}}"
+  style="background: conic-gradient({{color}} {{angle}}deg, #F0E4D8 0deg);"
+>
+  <view class="ring__inner">
+    <text class="ring__num">{{seconds}}</text>
+  </view>
+</view>

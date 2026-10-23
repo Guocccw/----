@@ -1,0 +1,114 @@
+.home {
+  padding-top: 24rpx;
+}
+.home__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 24rpx;
+  margin-bottom: 24rpx;
+  border-radius: 16rpx;
+  background: var(--color-warning-soft);
+  color: var(--color-warning-ink);
+  font-size: 24rpx;
+}
+.hero {
+  position: relative;
+  padding: 40rpx 0 56rpx;
+}
+.hero__title {
+  font-size: 56rpx;
+  line-height: 64rpx;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.hero__title--accent {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+}
+.hero__title--accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 2rpx;
+  width: 180rpx;
+  height: 12rpx;
+  border-radius: 8rpx;
+  background: var(--color-primary-border);
+  z-index: -1;
+}
+.hero__sub {
+  margin-top: 20rpx;
+  font-size: 26rpx;
+  color: var(--color-text-2);
+}
+.hero__deco {
+  position: absolute;
+  right: 24rpx;
+  top: 12rpx;
+  font-size: 96rpx;
+  transform: rotate(-8deg);
+  opacity: 0.9;
+}
+.hero__deco--grape {
+  right: 120rpx;
+  top: 100rpx;
+  font-size: 72rpx;
+  transform: rotate(8deg);
+}
+.home__btn {
+  width: 100%;
+}
+.home__btn + .home__btn {
+  margin-top: 16rpx;
+}
+.active-room {
+  position: relative;
+  display: flex;
+  margin-top: 32rpx;
+  padding: 0;
+  overflow: hidden;
+}
+.active-room__bar {
+  width: 8rpx;
+  background: var(--color-primary);
+}
+.active-room__main {
+  flex: 1;
+  padding: 24rpx 28rpx;
+}
+.active-room__code {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.active-room__go {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--color-primary-ink);
+}
+.active-room__arrow {
+  margin-left: 8rpx;
+}
+.weekly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  margin-top: 24rpx;
+  font-size: 26rpx;
+  color: var(--color-text-2);
+}
+.weekly__icon {
+  margin-right: 8rpx;
+}
+.footer-links {
+  padding: 40rpx 0 24rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--color-text-2);
+}
+.footer-links__dot {
+  margin: 0 12rpx;
+  color: var(--color-text-3);
+}

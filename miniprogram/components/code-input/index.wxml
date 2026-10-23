@@ -1,0 +1,22 @@
+<view class="code {{error ? 'code--error' : ''}}" bindtap="onTap">
+  <input
+    class="code__input"
+    type="number"
+    maxlength="6"
+    value="{{inputValue}}"
+    focus="{{focus}}"
+    disabled="{{disabled}}"
+    confirm-type="done"
+    bindinput="onInput"
+    bindfocus="onFocus"
+    bindblur="onBlur"
+    bindconfirm="onConfirm"
+  />
+  <view
+    wx:for="{{digits}}"
+    wx:key="index"
+    class="code__cell {{index === activeIndex && focus ? 'code__cell--active' : ''}} {{item ? 'code__cell--filled' : ''}}"
+  >
+    <text>{{item}}</text>
+  </view>
+</view>

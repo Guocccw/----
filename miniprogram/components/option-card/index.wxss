@@ -1,0 +1,77 @@
+:host { display: block; }
+.option {
+  display: flex;
+  align-items: center;
+  min-height: 112rpx;
+  padding: 18rpx 24rpx;
+  margin-bottom: 16rpx;
+  border: 2rpx solid var(--color-border);
+  border-radius: 24rpx;
+  background: var(--color-surface);
+  transition: background-color 160ms ease-out, border-color 160ms ease-out;
+}
+.option--pressed {
+  background: #FFF7F1;
+  border-color: var(--color-primary-border);
+}
+.option--selected,
+.option--submitting {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+.option--submitted {
+  background: #FAF6F2;
+  border-color: var(--color-border);
+}
+.option--correct {
+  background: var(--color-success-soft);
+  border-color: var(--color-success);
+}
+.option--wrong {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
+}
+.option--disabled {
+  background: #FAF6F2;
+  border-color: var(--color-border);
+  opacity: 0.72;
+}
+.option__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 20rpx;
+  border-radius: 50%;
+  font-size: 28rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.badge--a { background: var(--option-a-soft); color: var(--option-a-ink); }
+.badge--b { background: var(--option-b-soft); color: var(--option-b-ink); }
+.badge--c { background: var(--option-c-soft); color: var(--option-c-ink); }
+.badge--d { background: var(--option-d-soft); color: var(--option-d-ink); }
+.option__text {
+  flex: 1;
+  font-size: 32rpx;
+  line-height: 46rpx;
+  color: var(--color-text);
+}
+.option__status {
+  margin-left: 12rpx;
+  font-size: 24rpx;
+  color: var(--color-text-2);
+  white-space: nowrap;
+}
+.option__status--correct { color: var(--color-success-ink); }
+.option__status--wrong { color: var(--color-danger-ink); }
+.option__spinner {
+  width: 28rpx;
+  height: 28rpx;
+  margin-left: 12rpx;
+  border: 3rpx solid var(--color-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}

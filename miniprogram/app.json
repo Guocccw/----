@@ -1,0 +1,50 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/create/index",
+    "pages/join/index",
+    "pages/room/index",
+    "pages/game/index",
+    "pages/result/index",
+    "pages/rank/index",
+    "pages/profile/index",
+    "pages/rules/index",
+    "pages/privacy/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFF8F0",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "果果答题",
+    "backgroundColor": "#FFF8F0",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6F6259",
+    "selectedColor": "#E85D2A",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home-normal.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/rank/index",
+        "text": "排行榜",
+        "iconPath": "assets/tabbar/trophy-normal.png",
+        "selectedIconPath": "assets/tabbar/trophy-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/user-normal.png",
+        "selectedIconPath": "assets/tabbar/user-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "podium": "../../components/podium/index",
+    "fruit-avatar": "../../components/fruit-avatar/index"
+  }
+}

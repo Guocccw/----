@@ -1,0 +1,51 @@
+<view class="page home">
+  <view wx:if="{{loginError}}" class="home__error">
+    <text>{{errorText}}</text>
+    <text class="link" bindtap="onRetry">重试</text>
+  </view>
+
+  <view class="hero">
+    <view class="hero__deco">🍋</view>
+    <view class="hero__deco hero__deco--grape">🍇</view>
+    <view class="hero__title">四个人，一道题</view>
+    <view class="hero__title hero__title--accent">看谁手快</view>
+    <view class="hero__sub">不用匹配，喊上朋友就能开</view>
+  </view>
+
+  <button
+    class="btn btn--primary home__btn"
+    hover-class="btn--primary-hover"
+    bindtap="onCreate"
+    disabled="{{loginError}}"
+  >＋ 创建房间</button>
+  <button
+    class="btn btn--secondary home__btn"
+    hover-class="btn--secondary-hover"
+    bindtap="onJoin"
+    disabled="{{loginError}}"
+  >加入房间</button>
+
+  <view wx:if="{{activeRoom}}" class="card active-room" bindtap="onContinue">
+    <view class="active-room__bar"></view>
+    <view class="active-room__main">
+      <view class="row--between">
+        <text class="active-room__code num">房间 {{activeRoom.roomCode}}</text>
+        <text class="chip chip--primary">{{statusText}}</text>
+      </view>
+      <view class="active-room__go">{{continueText}} <text class="active-room__arrow">→</text></view>
+    </view>
+  </view>
+
+  <view class="weekly" bindtap="onRank">
+    <text class="weekly__icon">🏆</text>
+    <text>累计 {{stats.games || 0}} 局 · 最佳 {{stats.bestScore || 0}} 分</text>
+  </view>
+
+  <view class="footer-links">
+    <text bindtap="onRules">玩法说明</text>
+    <text class="footer-links__dot">·</text>
+    <text bindtap="onPrivacy">隐私协议</text>
+    <text class="footer-links__dot">·</text>
+    <text>v0.1.0</text>
+  </view>
+</view>

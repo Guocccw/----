@@ -1,0 +1,84 @@
+<view class="game">
+  <view class="game__nav" style="padding-top:{{statusBarHeight}}px;">
+    <view class="game__back" bindtap="onBack">‹</view>
+    <view class="game__nav-title">
+      <block wx:if="{{view && view.round}}">第 {{view.round.index + 1}} / {{view.round.total}} 题</block>
+      <block wx:else>对局</block>
+    </view>
+    <view class="game__nav-space"></view>
+  </view>
+
+  <view wx:if="{{network === 'unstable'}}" class="offline-bar">
+    <text>网络不稳定，正在重连…</text>
+    <text class="link" bindtap="refresh">重连</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="game__body">
+    <view class="skeleton" style="height:88rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:240rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:112rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:112rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:112rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:112rpx;"></view>
+  </view>
+
+  <view wx:elif="{{!view}}" class="empty">
+    <view class="empty__emoji">🍎</view>
+    <view class="empty__title">对局加载失败</view>
+    <view class="empty__desc">{{errorText || '请返回首页重试'}}</view>
+    <button class="btn btn--secondary" bindtap="onBack">返回首页</button>
+  </view>
+
+  <block wx:elif="{{view}}">
+    <view class="game__body">
+      <view class="game__progress">
+        <view class="game__progress-fill" style="width:{{progress}}%;"></view>
+      </view>
+
+      <view class="game__info">
+        <view class="game__score">
+          <text class="game__score-label">总分</text>
+          <text class="game__score-num num">{{score}}</text>
+          <text wx:if="{{settled && myGain !== null}}" class="game__gain num">+{{myGain}}</text>
+        </view>
+        <countdown-ring remaining="{{remaining}}" duration="{{duration}}" />
+      </view>
+
+      <view class="card game__question">
+        <text class="chip">单选题</text>
+        <view class="game__stem">{{question.stem}}</view>
+      </view>
+
+      <view class="game__options">
+        <option-card
+          wx:for="{{options}}"
+          wx:key="index"
+          index="{{index}}"
+          text="{{item}}"
+          state="{{optionStates[index]}}"
+          bind:choose="onChoose"
+        />
+      </view>
+    </view>
+
+    <view class="game__bottom">
+      <view class="game__players">
+        <block wx:for="{{chips}}" wx:key="playerId">
+          <view class="game__player {{item.isMe ? 'game__player--me' : ''}}">
+            <fruit-avatar avatar="{{item.avatar}}" size="{{40}}" />
+            <text wx:if="{{settled && item.correct === true}}" class="game__mark game__mark--ok">✓</text>
+            <text wx:elif="{{settled && item.correct === false}}" class="game__mark game__mark--no">✗</text>
+            <text wx:elif="{{item.answered}}" class="game__mark game__mark--done">✓</text>
+            <text wx:else class="game__mark">…</text>
+          </view>
+        </block>
+      </view>
+      <view class="game__status">{{statusText}}</view>
+    </view>
+
+    <view wx:if="{{phase === 'countdown'}}" class="game__countdown">
+      <view class="game__countdown-num">{{countdown}}</view>
+      <view class="game__countdown-text">准备开始</view>
+    </view>
+  </block>
+</view>

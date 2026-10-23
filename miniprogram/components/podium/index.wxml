@@ -1,0 +1,23 @@
+<view class="podium">
+  <view wx:if="{{rankings[1]}}" class="podium__col podium__col--second">
+    <text class="podium__medal">🥈</text>
+    <fruit-avatar avatar="{{rankings[1].avatar}}" size="{{96}}" />
+    <text class="podium__name">{{rankings[1].nickName}}</text>
+    <text class="podium__score num">{{rankings[1].score}}</text>
+    <view class="podium__base podium__base--second"></view>
+  </view>
+  <view wx:if="{{rankings[0]}}" class="podium__col podium__col--first">
+    <text class="podium__crown">👑</text>
+    <fruit-avatar avatar="{{rankings[0].avatar}}" size="{{112}}" ring="{{true}}" />
+    <text class="podium__name">{{rankings[0].nickName}}</text>
+    <text class="podium__score num">{{rankings[0].score}}</text>
+    <view class="podium__base podium__base--first"></view>
+  </view>
+  <view wx:if="{{rankings[2]}}" class="podium__col podium__col--third">
+    <text class="podium__medal">🥉</text>
+    <fruit-avatar avatar="{{rankings[2].avatar}}" size="{{80}}" />
+    <text class="podium__name">{{rankings[2].nickName}}</text>
+    <text class="podium__score num">{{rankings[2].score}}</text>
+    <view class="podium__base podium__base--third"></view>
+  </view>
+</view>

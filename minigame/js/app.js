@@ -1,0 +1,638 @@
+const core = require('./core');
+const ui = require('./ui');
+const screens = require('./screens');
+
+const ROOM_SCREENS = ['room', 'game', 'result'];
+
+class App {
+  constructor() {
+    this.canvas = null;
+    this.screens = screens;
+    this.hits = [];
+    this.touch = null;
+    this.pollTimer = null;
+    this.polling = false;
+    this.heartbeatTimer = null;
+    this.settleBusy = false;
+    this.advanceBusy = false;
+    this.returnScreen = 'home';
+    this.hidden = false;
+    this.state = {
+      screen: 'loading',
+      user: null,
+      activeRoom: null,
+      view: null,
+      roomCode: '',
+      loading: false,
+      error: '',
+      pendingCode: '',
+      create: { count: 10, duration: 15 },
+      joinCode: '',
+      joinError: '',
+      rank: { loading: false, weekText: '', top: [], me: null, myRank: null },
+      privacyTab: 'privacy',
+      submitting: false,
+      pendingChoice: null,
+    };
+  }
+
+  start() {
+    this.canvas = wx.createCanvas();
+    const info = core.getWindowInfo();
+    ui.init(this.canvas, info);
+    this.bindEvents();
+    this.loop();
+    this.boot();
+  }
+
+  async boot() {
+    this.state.screen = 'loading';
+    this.state.error = '';
+    try {
+      if (!wx.cloud) throw new Error('当前微信版本不支持云开发');
+      const opts = { traceUser: true };
+      if (core.ENV_ID) opts.env = core.ENV_ID;
+      wx.cloud.init(opts);
+      try {
+        wx.showShareMenu({ withShareTicket: true });
+      } catch (err) {}
+      const launch = wx.getLaunchOptionsSync ? wx.getLaunchOptionsSync() : {};
+      const code = launch && launch.query && launch.query.code;
+      if (code && /^[1-9]\d{5}$/.test(String(code))) this.state.pendingCode = String(code);
+      await this.login();
+    } catch (err) {
+      console.error('[guoguo] boot failed', err);
+      this.state.error = core.messageFor(err);
+      this.state.screen = 'loading';
+    }
+  }
+
+  async login() {
+    const data = await core.call('auth.login');
+    this.state.user = data.user || null;
+    this.state.activeRoom = data.activeRoom || null;
+    if (this.state.pendingCode) {
+      const code = this.state.pendingCode;
+      this.state.pendingCode = '';
+      await this.joinRoom(code, true);
+      return;
+    }
+    if (this.state.activeRoom && this.state.activeRoom.roomCode) {
+      await this.openRoom(this.state.activeRoom.roomCode);
+      return;
+    }
+    this.go('home');
+  }
+
+  async retry() {
+    this.state.error = '';
+    this.state.screen = 'loading';
+    await this.boot();
+  }
+
+  bindEvents() {
+    wx.onTouchStart((e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      this.touch = { x: t.clientX, y: t.clientY, at: Date.now() };
+    });
+
+    wx.onTouchEnd((e) => {
+      if (!this.touch) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - this.touch.x;
+      const dy = t.clientY - this.touch.y;
+      const moved = Math.sqrt(dx * dx + dy * dy);
+      const tap = moved < 14;
+      this.touch = null;
+      if (!tap) return;
+      for (let i = this.hits.length - 1; i >= 0; i--) {
+        const h = this.hits[i];
+        if (t.clientX >= h.x && t.clientX <= h.x + h.w && t.clientY >= h.y && t.clientY <= h.y + h.h) {
+          this.action(h.id, h.payload);
+          return;
+        }
+      }
+    });
+
+    wx.onShow((res) => {
+      this.hidden = false;
+      const q = (res && res.query) || {};
+      if (q.code && /^[1-9]\d{5}$/.test(String(q.code)) && this.state.user && this.state.screen === 'home') {
+        this.joinRoom(String(q.code));
+      }
+      if (ROOM_SCREENS.indexOf(this.state.screen) >= 0) {
+        this.startPoll();
+        this.startHeartbeat();
+      }
+    });
+
+    wx.onHide(() => {
+      this.hidden = true;
+      this.stopRoom();
+    });
+  }
+
+  loop() {
+    const raf = typeof requestAnimationFrame === 'function'
+      ? requestAnimationFrame
+      : (fn) => setTimeout(() => fn(Date.now()), 16);
+    const frame = () => {
+      if (!this.hidden) {
+        this.tick();
+        const drawer = this.screens[this.state.screen] || this.screens.loading;
+        drawer(this);
+      }
+      raf(frame);
+    };
+    raf(frame);
+  }
+
+  now() {
+    return core.now();
+  }
+
+  phase() {
+    const view = this.state.view;
+    if (!view) return 'idle';
+    if (view.status === 'waiting') return 'waiting';
+    if (view.status === 'settled') return 'settled';
+    if (!view.round) return 'waiting';
+    const now = this.now();
+    if (now < view.round.startedAt) return 'countdown';
+    if (view.round.correctIndex !== null && typeof view.round.correctIndex !== 'undefined') return 'revealed';
+    if (now < view.round.endsAt) return 'answering';
+    return 'revealed';
+  }
+
+  remaining() {
+    const view = this.state.view;
+    if (!view || !view.round) return 0;
+    return Math.max(0, view.round.endsAt - this.now());
+  }
+
+  chips() {
+    const view = this.state.view;
+    if (!view || !view.round) return [];
+    const per = view.round.perPlayer || [];
+    return (view.players || []).filter((p) => !p.left).map((p) => {
+      const item = per.find((x) => x.playerId === p.playerId) || {};
+      return {
+        playerId: p.playerId,
+        nickName: p.nickName,
+        avatar: p.avatar,
+        answered: !!item.answered,
+        correct: item.correct,
+        gain: item.gain,
+        isMe: p.playerId === view.playerId,
+      };
+    });
+  }
+
+  tick() {
+    if (this.state.screen !== 'game') return;
+    const view = this.state.view;
+    if (!view || !view.round) return;
+    const round = view.round;
+    const now = this.now();
+    const settled = round.correctIndex !== null && typeof round.correctIndex !== 'undefined';
+    if (!settled && (round.answeredCount >= round.activeCount || now >= round.endsAt + 1000)) {
+      this.trySettle();
+    }
+    if (settled && round.revealEndsAt && now >= round.revealEndsAt + 300) {
+      this.tryAdvance();
+    }
+  }
+
+  go(screen, keepRoom) {
+    this.state.screen = screen;
+    this.state.joinError = '';
+    if (!keepRoom && ROOM_SCREENS.indexOf(screen) < 0) this.stopRoom();
+  }
+
+  async openRoom(code) {
+    this.state.roomCode = code;
+    this.state.loading = true;
+    try {
+      const data = await core.call('room.state', { roomCode: code });
+      this.applyRoom(data.view);
+      this.startPoll();
+      this.startHeartbeat();
+    } catch (err) {
+      core.toast(core.messageFor(err));
+      this.go('home');
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  applyRoom(view) {
+    if (!view) return;
+    this.state.view = view;
+    this.state.roomCode = view.roomCode;
+    this.state.activeRoom = {
+      roomCode: view.roomCode,
+      playerId: view.playerId,
+      status: view.status,
+    };
+    this.state.loading = false;
+    let target = 'room';
+    if (view.status === 'playing') target = 'game';
+    else if (view.status === 'settled') target = 'result';
+    if (this.state.screen !== target) this.go(target, true);
+  }
+
+  startPoll() {
+    if (!this.state.roomCode) return;
+    this.stopPoll();
+    const tick = async () => {
+      if (this.polling) return;
+      this.polling = true;
+      try {
+        const data = await core.call('room.state', { roomCode: this.state.roomCode }, 6000);
+        this.applyRoom(data.view);
+      } catch (err) {
+        if (['ROOM_CLOSED', 'ROOM_NOT_FOUND', 'NOT_IN_ROOM', 'KICKED'].indexOf(err.name) >= 0) {
+          this.stopRoom();
+          this.state.view = null;
+          this.state.activeRoom = null;
+          this.go('home');
+          core.toast(core.messageFor(err));
+          this.polling = false;
+          return;
+        }
+      } finally {
+        this.polling = false;
+      }
+      if (ROOM_SCREENS.indexOf(this.state.screen) >= 0 && this.state.roomCode) {
+        const delay = this.state.screen === 'game' ? 1000 : 1600;
+        this.pollTimer = setTimeout(tick, delay);
+      }
+    };
+    tick();
+  }
+
+  stopPoll() {
+    if (this.pollTimer) clearTimeout(this.pollTimer);
+    this.pollTimer = null;
+  }
+
+  startHeartbeat() {
+    if (!this.state.roomCode) return;
+    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    this.heartbeatTimer = setInterval(() => {
+      if (!this.state.roomCode) return;
+      core.call('room.heartbeat', { roomCode: this.state.roomCode }).catch(() => {});
+    }, 15000);
+  }
+
+  stopRoom() {
+    this.stopPoll();
+    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    this.heartbeatTimer = null;
+  }
+
+  async createRoom() {
+    if (this.state.loading) return;
+    this.state.loading = true;
+    try {
+      const data = await core.call('room.create', {
+        config: {
+          questionCount: this.state.create.count,
+          durationSec: this.state.create.duration,
+          category: 'general',
+        },
+      });
+      this.applyRoom(data.view);
+      this.startPoll();
+      this.startHeartbeat();
+    } catch (err) {
+      core.toast(core.messageFor(err));
+      if (err.name === 'ALREADY_IN_ROOM') this.go('home');
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async joinRoom(rawCode, silent) {
+    const code = String(rawCode || this.state.joinCode || '').replace(/\D/g, '').slice(0, 6);
+    if (code.length !== 6) {
+      this.state.joinError = '输入 6 位房间码';
+      return;
+    }
+    if (this.state.loading) return;
+    this.state.loading = true;
+    this.state.joinError = '';
+    try {
+      const data = await core.call('room.join', { roomCode: code, source: 'code' });
+      this.state.joinCode = '';
+      this.applyRoom(data.view);
+      this.startPoll();
+      this.startHeartbeat();
+    } catch (err) {
+      this.state.joinError = core.messageFor(err);
+      if (!silent) core.toast(core.messageFor(err));
+      this.go('join');
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async startGame() {
+    if (this.state.loading) return;
+    this.state.loading = true;
+    try {
+      const data = await core.call('room.start', { roomCode: this.state.roomCode });
+      this.applyRoom(data.view);
+    } catch (err) {
+      core.toast(core.messageFor(err));
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async answer(index) {
+    if (this.state.submitting) return;
+    if (this.phase() !== 'answering') return;
+    const view = this.state.view;
+    if (!view || !view.round) return;
+    if (typeof view.round.myChoice === 'number') return;
+    this.state.submitting = true;
+    this.state.pendingChoice = index;
+    try {
+      const data = await core.call('room.answer', {
+        roomCode: this.state.roomCode,
+        roundIndex: view.round.index,
+        choice: index,
+      });
+      this.applyRoom(data.view);
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' });
+    } catch (err) {
+      if (['ALREADY_ANSWERED', 'ROUND_ENDED', 'ROUND_MISMATCH'].indexOf(err.name) >= 0) {
+        this.refreshRoom();
+      } else {
+        core.toast(core.messageFor(err));
+      }
+    } finally {
+      this.state.submitting = false;
+      this.state.pendingChoice = null;
+    }
+  }
+
+  async trySettle() {
+    if (this.settleBusy) return;
+    const view = this.state.view;
+    if (!view || !view.round) return;
+    if (view.round.correctIndex !== null && typeof view.round.correctIndex !== 'undefined') return;
+    this.settleBusy = true;
+    try {
+      const data = await core.call('room.settle', {
+        roomCode: this.state.roomCode,
+        roundIndex: view.round.index,
+      });
+      this.applyRoom(data.view);
+    } catch (err) {
+      // 时间未到或已结算，下一帧/轮询会重试
+    } finally {
+      this.settleBusy = false;
+    }
+  }
+
+  async tryAdvance() {
+    if (this.advanceBusy) return;
+    const view = this.state.view;
+    if (!view || !view.round) return;
+    this.advanceBusy = true;
+    try {
+      const data = await core.call('room.advance', {
+        roomCode: this.state.roomCode,
+        roundIndex: view.round.index,
+      });
+      this.applyRoom(data.view);
+    } catch (err) {
+      // 重复推进或时间未到
+    } finally {
+      this.advanceBusy = false;
+    }
+  }
+
+  async refreshRoom() {
+    if (!this.state.roomCode) return;
+    try {
+      const data = await core.call('room.state', { roomCode: this.state.roomCode });
+      this.applyRoom(data.view);
+    } catch (err) {}
+  }
+
+  leaveRoom() {
+    wx.showModal({
+      title: '离开房间？',
+      content: '离开后座位会空出来，本局不会计入周榜。',
+      confirmText: '离开',
+      cancelText: '再想想',
+      confirmColor: '#C02C36',
+      success: async (res) => {
+        if (!res.confirm) return;
+        try {
+          await core.call('room.leave', { roomCode: this.state.roomCode });
+        } catch (err) {}
+        this.stopRoom();
+        this.state.view = null;
+        this.state.activeRoom = null;
+        this.go('home');
+      },
+    });
+  }
+
+  async rematch() {
+    if (this.state.loading) return;
+    this.state.loading = true;
+    try {
+      const data = await core.call('room.rematch', { roomCode: this.state.roomCode });
+      this.applyRoom(data.view);
+      this.startPoll();
+      this.startHeartbeat();
+    } catch (err) {
+      core.toast(core.messageFor(err));
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async loadRank() {
+    if (this.state.rank.loading) return;
+    this.state.rank.loading = true;
+    try {
+      const data = await core.call('rank.weekly');
+      this.state.rank = {
+        loading: false,
+        weekText: data.weekText || '本周',
+        top: data.top || [],
+        me: data.me || null,
+        myRank: data.myRank || null,
+      };
+    } catch (err) {
+      this.state.rank.loading = false;
+      core.toast(core.messageFor(err));
+    }
+  }
+
+  copyCode() {
+    if (!this.state.roomCode) return;
+    wx.setClipboardData({
+      data: this.state.roomCode,
+      success: () => core.toast('房间码已复制'),
+    });
+  }
+
+  shareRoom() {
+    if (!this.state.roomCode) return;
+    const title = '果果答题 · 房间 ' + this.state.roomCode + '，来一局？';
+    if (wx.shareAppMessage) {
+      wx.shareAppMessage({ title, query: 'code=' + this.state.roomCode });
+    } else {
+      core.toast('请点右上角分享');
+    }
+  }
+
+  shareResult() {
+    const view = this.state.view;
+    const me = view && view.final ? view.final.rankings.find((p) => p.playerId === view.playerId) : null;
+    const title = '我在果果答题拿了 ' + (me ? me.score : 0) + ' 分' + (me ? '，排第 ' + me.rank : '') + '，来一局？';
+    if (wx.shareAppMessage) {
+      wx.shareAppMessage({ title, query: '' });
+    } else {
+      core.toast('请点右上角分享');
+    }
+  }
+
+  editNick() {
+    const current = (this.state.user && this.state.user.nickName) || '';
+    wx.showModal({
+      title: '修改昵称',
+      editable: true,
+      placeholderText: '2–12 个字符（当前：' + current + '）',
+      confirmText: '保存',
+      cancelText: '取消',
+      success: async (res) => {
+        if (!res.confirm) return;
+        const name = String(res.content || '').trim();
+        if (Array.from(name).length < 2 || Array.from(name).length > 12) {
+          core.toast('昵称需要 2–12 个字符');
+          return;
+        }
+        try {
+          const data = await core.call('user.updateProfile', { nickName: name });
+          this.state.user = data.user;
+          core.toast('已保存');
+        } catch (err) {
+          core.toast(core.messageFor(err));
+        }
+      },
+    });
+  }
+
+  editAvatar() {
+    const list = core.EMOJIS.slice(0, 6).map((e) => e + ' 头像');
+    wx.showActionSheet({
+      itemList: list,
+      success: async (res) => {
+        const index = res.tapIndex;
+        const avatar = { type: 'emoji', value: core.EMOJIS[index], bg: core.AVATAR_BGS[index] };
+        try {
+          const data = await core.call('user.updateProfile', { avatar });
+          this.state.user = data.user;
+          core.toast('头像已更新');
+        } catch (err) {
+          core.toast(core.messageFor(err));
+        }
+      },
+    });
+  }
+
+  openRules(from) {
+    this.returnScreen = from || 'home';
+    this.go('rules');
+  }
+
+  openPrivacy(from) {
+    this.returnScreen = from || 'home';
+    this.state.privacyTab = 'privacy';
+    this.go('privacy');
+  }
+
+  action(id, payload) {
+    const handlers = {
+      'common.retry': () => this.retry(),
+      'nav.home': () => this.go('home'),
+      'nav.rank': () => {
+        this.go('rank');
+        this.loadRank();
+      },
+      'nav.profile': () => this.go('profile'),
+      'home.create': () => this.go('create'),
+      'home.join': () => this.go('join'),
+      'home.active': () => this.state.activeRoom && this.openRoom(this.state.activeRoom.roomCode),
+      'home.rules': () => this.openRules('home'),
+      'home.privacy': () => this.openPrivacy('home'),
+      'create.back': () => this.go('home'),
+      'create.count': () => {
+        this.state.create.count = Number(payload);
+      },
+      'create.duration': () => {
+        this.state.create.duration = Number(payload);
+      },
+      'create.submit': () => this.createRoom(),
+      'join.back': () => this.go('home'),
+      'join.key': () => {
+        if (this.state.joinCode.length < 6) this.state.joinCode += String(payload);
+        this.state.joinError = '';
+      },
+      'join.del': () => {
+        this.state.joinCode = this.state.joinCode.slice(0, -1);
+        this.state.joinError = '';
+      },
+      'join.submit': () => this.joinRoom(this.state.joinCode),
+      'room.back': () => this.leaveRoom(),
+      'room.start': () => this.startGame(),
+      'room.copy': () => this.copyCode(),
+      'room.share': () => this.shareRoom(),
+      'room.leave': () => this.leaveRoom(),
+      'game.back': () => this.leaveRoom(),
+      'game.answer': () => this.answer(Number(payload)),
+      'result.rematch': () => this.rematch(),
+      'result.home': () => this.go('home'),
+      'result.share': () => this.shareResult(),
+      'rank.refresh': () => this.loadRank(),
+      'rank.create': () => this.go('create'),
+      'rank.rules': () => this.openRules('rank'),
+      'profile.nick': () => this.editNick(),
+      'profile.avatar': () => this.editAvatar(),
+      'profile.rules': () => this.openRules('profile'),
+      'profile.privacy': () => this.openPrivacy('profile'),
+      'rules.back': () => this.go(this.returnScreen || 'home'),
+      'rules.create': () => this.go('create'),
+      'privacy.back': () => this.go(this.returnScreen || 'home'),
+      'privacy.tab': () => {
+        this.state.privacyTab = payload === 'terms' ? 'terms' : 'privacy';
+      },
+    };
+    const fn = handlers[id];
+    if (!fn) return;
+    try {
+      fn();
+    } catch (err) {
+      console.error('[guoguo] action failed', err);
+      core.toast(core.messageFor(err));
+    }
+  }
+}
+
+function start() {
+  const app = new App();
+  start.app = app;
+  app.start();
+}
+
+module.exports = { start, App };

@@ -1,0 +1,9 @@
+<view class="seat {{isSelf ? 'seat--self' : ''}} {{player.left || !online ? 'seat--dim' : ''}}" bindtap="onTap">
+  <text wx:if="{{isOwner}}" class="seat__crown">👑</text>
+  <fruit-avatar avatar="{{player.avatar}}" size="{{96}}" ring="{{isSelf}}" dim="{{player.left || !online}}" />
+  <view class="seat__name">{{player.nickName}}</view>
+  <view class="seat__meta">
+    <text wx:if="{{isOwner}}" class="chip chip--primary seat__chip">房主</text>
+    <text class="seat__status">{{statusText}}</text>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "option-card": "../../components/option-card/index",
+    "countdown-ring": "../../components/countdown-ring/index",
+    "fruit-avatar": "../../components/fruit-avatar/index"
+  }
+}

@@ -1,0 +1,157 @@
+.game {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+}
+.game__nav {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+  box-sizing: content-box;
+}
+.game__back {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  line-height: 1;
+  color: var(--color-text);
+}
+.game__nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.game__nav-space {
+  width: 150rpx;
+}
+.game__body {
+  padding: 0 32rpx;
+}
+.game__progress {
+  height: 4rpx;
+  border-radius: 999rpx;
+  background: var(--color-border);
+  overflow: hidden;
+  margin-top: 8rpx;
+}
+.game__progress-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+  transition: width 240ms ease-out;
+}
+.game__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+}
+.game__score {
+  display: flex;
+  align-items: baseline;
+}
+.game__score-label {
+  font-size: 22rpx;
+  color: var(--color-text-2);
+  margin-right: 8rpx;
+}
+.game__score-num {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+.game__gain {
+  margin-left: 12rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-primary-ink);
+}
+.game__question {
+  min-height: 240rpx;
+  padding: 28rpx 32rpx;
+}
+.game__stem {
+  margin-top: 16rpx;
+  font-size: 36rpx;
+  line-height: 54rpx;
+  font-weight: 500;
+}
+.game__options {
+  margin-top: 24rpx;
+}
+.game__bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12rpx 32rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(255,248,240,0), #FFF8F0 20rpx);
+}
+.game__players {
+  display: flex;
+  justify-content: center;
+}
+.game__player {
+  position: relative;
+  margin: 0 8rpx;
+}
+.game__player--me {
+  box-shadow: 0 0 0 3rpx var(--color-primary);
+  border-radius: 50%;
+}
+.game__mark {
+  position: absolute;
+  right: -6rpx;
+  bottom: -4rpx;
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-2);
+  font-size: 18rpx;
+  line-height: 28rpx;
+  text-align: center;
+  font-weight: 700;
+}
+.game__mark--ok { color: var(--color-success-ink); }
+.game__mark--no { color: var(--color-danger-ink); }
+.game__mark--done { color: var(--color-success-ink); }
+.game__status {
+  margin-top: 8rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-text-2);
+}
+.game__countdown {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 248, 240, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+.game__countdown-num {
+  font-size: 140rpx;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.game__countdown-text {
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  color: var(--color-text-2);
+}

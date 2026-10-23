@@ -1,0 +1,42 @@
+.join {
+  padding-top: 56rpx;
+}
+.join__title {
+  font-size: 44rpx;
+  line-height: 56rpx;
+  font-weight: 600;
+}
+.join__sub {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--color-text-2);
+}
+.join__code {
+  margin-top: 56rpx;
+}
+.join__hint,
+.join__error {
+  min-height: 36rpx;
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text-2);
+}
+.join__error {
+  color: var(--color-danger-ink);
+}
+.join__btn {
+  width: 100%;
+  margin-top: 40rpx;
+}
+.join__foot {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-text-3);
+}
+.join__back {
+  margin-top: 48rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-primary-ink);
+}

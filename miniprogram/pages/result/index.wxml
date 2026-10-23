@@ -1,0 +1,92 @@
+<view class="result">
+  <view class="result__nav" style="padding-top:{{statusBarHeight}}px;">
+    <view class="result__close" bindtap="onHome">×</view>
+    <view class="result__nav-title">本局结束</view>
+    <view class="result__nav-space"></view>
+  </view>
+
+  <view wx:if="{{loading}}" class="result__body">
+    <view class="skeleton" style="height:320rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:112rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:420rpx;"></view>
+  </view>
+
+  <view wx:elif="{{closed}}" class="result__body">
+    <view class="empty">
+      <view class="empty__emoji">🏁</view>
+      <view class="empty__title">房间已结束</view>
+      <view class="empty__desc">{{errorText || '房主已关闭或房间过期'}}</view>
+      <button class="btn btn--primary result__home-btn" bindtap="onHome">返回首页</button>
+    </view>
+  </view>
+
+  <view wx:elif="{{!view}}" class="result__body">
+    <view class="empty">
+      <view class="empty__emoji">🍎</view>
+      <view class="empty__title">结果加载失败</view>
+      <view class="empty__desc">{{errorText || '房间可能已结束'}}</view>
+      <button class="btn btn--secondary result__home-btn" bindtap="onHome">返回首页</button>
+    </view>
+  </view>
+
+  <block wx:elif="{{view}}">
+    <view class="result__body">
+      <podium rankings="{{rankings}}" />
+
+      <view class="card result__stats">
+        <view class="result__stat">
+          <text class="result__stat-num">{{stats.rate}}</text>
+          <text class="result__stat-label">正确率</text>
+        </view>
+        <view class="result__stat">
+          <text class="result__stat-num">{{stats.avg}}</text>
+          <text class="result__stat-label">平均用时</text>
+        </view>
+        <view class="result__stat">
+          <text class="result__stat-num num">{{stats.score}}</text>
+          <text class="result__stat-label">总分</text>
+        </view>
+      </view>
+
+      <view class="card result__list">
+        <view class="result__row result__row--head">
+          <text class="result__no">名次</text>
+          <text class="result__player">玩家</text>
+          <text class="result__score">总分</text>
+          <text class="result__correct">答对</text>
+        </view>
+        <view
+          wx:for="{{rankings}}"
+          wx:key="playerId"
+          class="result__row {{item.playerId === view.playerId ? 'result__row--me' : ''}}"
+        >
+          <text class="result__no num">{{item.rank}}</text>
+          <view class="result__player">
+            <fruit-avatar avatar="{{item.avatar}}" size="{{56}}" />
+            <text class="result__name">{{item.nickName}}</text>
+            <text wx:if="{{item.left}}" class="chip chip--danger result__left">已离开</text>
+          </view>
+          <text class="result__score num">{{item.score}}</text>
+          <text class="result__correct num">{{item.correctCount}}/{{view.config.questionCount}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="result__bottom">
+      <button
+        class="btn btn--primary {{rematching ? 'btn--loading' : ''}}"
+        hover-class="btn--primary-hover"
+        bindtap="onRematch"
+        disabled="{{!isOwner || rematching}}"
+      >
+        <view wx:if="{{rematching}}" class="spinner"></view>
+        <text>{{isOwner ? (rematching ? '准备中…' : '再来一局') : '等房主再来一局'}}</text>
+      </button>
+      <view class="result__hint">{{isOwner ? '房主开启后，大家会回到等待页' : '房主开启新一局后会自动回到房间'}}</view>
+      <view class="result__actions">
+        <button class="btn btn--text" bindtap="onHome">返回首页</button>
+        <button class="btn btn--text" open-type="share">晒战绩</button>
+      </view>
+    </view>
+  </block>
+</view>

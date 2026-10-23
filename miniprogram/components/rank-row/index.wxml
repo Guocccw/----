@@ -1,0 +1,12 @@
+<view class="rank-row {{highlight ? 'rank-row--me' : ''}}">
+  <view class="rank-row__no">
+    <text wx:if="{{medal}}" class="rank-row__medal">{{medal}}</text>
+    <text wx:else class="rank-row__num">{{rank}}</text>
+  </view>
+  <fruit-avatar avatar="{{player.avatar}}" size="{{72}}" />
+  <view class="rank-row__main">
+    <view class="rank-row__name">{{player.nickName}}</view>
+    <view class="rank-row__sub">{{sub}}</view>
+  </view>
+  <view class="rank-row__score num">{{player.score}}</view>
+</view>

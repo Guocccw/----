@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "房间",
+  "usingComponents": {
+    "player-seat": "../../components/player-seat/index"
+  }
+}

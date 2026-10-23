@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "加入房间",
+  "usingComponents": {
+    "code-input": "../../components/code-input/index"
+  }
+}

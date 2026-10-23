@@ -1,0 +1,30 @@
+<view class="page join">
+  <view class="join__title">输入房间码</view>
+  <view class="join__sub">让朋友把 6 位房间码发给你</view>
+
+  <view class="join__code">
+    <code-input
+      value="{{code}}"
+      error="{{error}}"
+      disabled="{{loading}}"
+      bind:change="onCodeChange"
+      bind:complete="onCodeComplete"
+    />
+  </view>
+
+  <view wx:if="{{errorText}}" class="join__error">{{errorText}}</view>
+  <view wx:else class="join__hint">房间码在分享卡片里，也可以直接粘贴</view>
+
+  <button
+    class="btn btn--primary join__btn {{loading ? 'btn--loading' : ''}}"
+    hover-class="btn--primary-hover"
+    bindtap="doJoin"
+    disabled="{{loading || code.length !== 6}}"
+  >
+    <view wx:if="{{loading}}" class="spinner"></view>
+    <text>{{loading ? '加入中…' : '加入'}}</text>
+  </button>
+
+  <view class="join__foot">从聊天卡片进入会自动填入</view>
+  <view class="join__back" bindtap="onBackHome">返回首页</view>
+</view>

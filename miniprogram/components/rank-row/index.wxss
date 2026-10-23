@@ -1,0 +1,49 @@
+:host { display: block; }
+.rank-row {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+  padding: 0 16rpx;
+  border-radius: 20rpx;
+}
+.rank-row--me {
+  background: var(--color-primary-soft);
+  box-shadow: inset 4rpx 0 0 var(--color-primary);
+}
+.rank-row__no {
+  width: 56rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+.rank-row__num {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-text-2);
+  font-variant-numeric: tabular-nums;
+}
+.rank-row__medal {
+  font-size: 32rpx;
+}
+.rank-row__main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+}
+.rank-row__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-row__sub {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  color: var(--color-text-2);
+}
+.rank-row__score {
+  margin-left: 12rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-text);
+}

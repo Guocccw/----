@@ -1,0 +1,12 @@
+<view
+  class="avatar {{ring ? 'avatar--ring' : ''}} {{dim ? 'avatar--dim' : ''}}"
+  style="width:{{size}}rpx;height:{{size}}rpx;background:{{avatar.bg || '#FFE3D5'}};font-size:{{size * 0.52}}rpx;"
+>
+  <image
+    wx:if="{{avatar.type == 'cloud' && avatar.value}}"
+    class="avatar__img"
+    src="{{avatar.value}}"
+    mode="aspectFill"
+  />
+  <text wx:else class="avatar__emoji">{{avatar.value || '🍎'}}</text>
+</view>

@@ -1,0 +1,58 @@
+<view class="page page--with-bar create">
+  <view class="create__title">开一局？</view>
+  <view class="create__sub">选好节奏，朋友马上到</view>
+
+  <view class="field">
+    <view class="field__label">题目数量</view>
+    <view class="segmented">
+      <view
+        wx:for="{{counts}}"
+        wx:key="value"
+        class="segmented__item {{questionCount === item.value ? 'segmented__item--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onSelectCount"
+      >
+        <text class="segmented__value">{{item.label}}</text>
+        <text class="segmented__desc">{{item.desc}}</text>
+        <text wx:if="{{questionCount === item.value}}" class="segmented__check">✓</text>
+      </view>
+    </view>
+    <view class="field__hint">10 题大约 3–4 分钟，20 题适合硬核长局。</view>
+  </view>
+
+  <view class="field">
+    <view class="field__label">每题时长</view>
+    <view class="segmented">
+      <view
+        wx:for="{{durations}}"
+        wx:key="value"
+        class="segmented__item {{durationSec === item.value ? 'segmented__item--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onSelectDuration"
+      >
+        <text class="segmented__value">{{item.label}}</text>
+        <text class="segmented__desc">{{item.desc}}</text>
+        <text wx:if="{{durationSec === item.value}}" class="segmented__check">✓</text>
+      </view>
+    </view>
+    <view class="field__hint">15 秒是大多数人的舒适区。</view>
+  </view>
+
+  <view class="summary card--flat">
+    <text>⏱ {{summary}}</text>
+  </view>
+
+  <view wx:if="{{errorText}}" class="create__error">{{errorText}}</view>
+
+  <view class="bottom-bar">
+    <button
+      class="btn btn--primary {{loading ? 'btn--loading' : ''}}"
+      hover-class="btn--primary-hover"
+      bindtap="onCreate"
+      disabled="{{loading}}"
+    >
+      <view wx:if="{{loading}}" class="spinner"></view>
+      <text>{{loading ? '创建中…' : '创建并邀请'}}</text>
+    </button>
+  </view>
+</view>

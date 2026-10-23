@@ -1,0 +1,9 @@
+{
+  "name": "guoguo-setup",
+  "version": "0.1.0",
+  "description": "一次性初始化集合与题库",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

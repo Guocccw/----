@@ -1,0 +1,9 @@
+{
+  "name": "guoguo-cron",
+  "version": "0.1.0",
+  "description": "果果答题定时任务",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

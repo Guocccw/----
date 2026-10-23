@@ -1,0 +1,48 @@
+.privacy {
+  padding-top: 24rpx;
+}
+.privacy__tabs {
+  display: flex;
+  height: 72rpx;
+  padding: 4rpx;
+  border-radius: 999rpx;
+  background: #F6ECE3;
+}
+.privacy__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-2);
+}
+.privacy__tab--active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 4rpx 12rpx rgba(122, 63, 32, 0.08);
+}
+.privacy__updated {
+  margin: 16rpx 0 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-text-2);
+}
+.privacy__body {
+  margin-bottom: 48rpx;
+}
+.privacy__h {
+  margin-top: 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.privacy__h:first-child {
+  margin-top: 0;
+}
+.privacy__p {
+  margin-top: 12rpx;
+  font-size: 28rpx;
+  line-height: 48rpx;
+  color: var(--color-text-2);
+}

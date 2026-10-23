@@ -1,0 +1,84 @@
+.rules {
+  padding-top: 32rpx;
+}
+.rules__title {
+  font-size: 44rpx;
+  line-height: 56rpx;
+  font-weight: 600;
+}
+.rules__sub {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--color-text-2);
+}
+.rules__card {
+  margin-top: 24rpx;
+}
+.rules__heading {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.rules__steps {
+  margin-top: 16rpx;
+}
+.rules__step {
+  display: flex;
+  margin-top: 20rpx;
+}
+.rules__num {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 16rpx;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-ink);
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+.rules__step-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.rules__step-desc {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  line-height: 38rpx;
+  color: var(--color-text-2);
+}
+.rules__formula {
+  margin-top: 16rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.rules__desc,
+.rules__hint {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--color-text-2);
+}
+.rules__example {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 16rpx;
+  background: var(--color-surface-2);
+  font-size: 26rpx;
+}
+.rules__example-score {
+  font-weight: 700;
+  color: var(--color-primary-ink);
+}
+.rules__line {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  color: var(--color-text-2);
+}
+.rules__cta {
+  width: 100%;
+  margin-top: 32rpx;
+}

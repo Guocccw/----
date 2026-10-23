@@ -1,0 +1,24 @@
+:host { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4rpx solid #FFFFFF;
+  flex-shrink: 0;
+}
+.avatar--ring {
+  box-shadow: 0 0 0 4rpx var(--color-primary);
+}
+.avatar--dim {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.avatar__img {
+  width: 100%;
+  height: 100%;
+}
+.avatar__emoji {
+  line-height: 1;
+}

@@ -1,0 +1,63 @@
+<view class="page rank">
+  <view class="rank__tabs">
+    <view class="rank__tab {{tab === 'week' ? 'rank__tab--active' : ''}}" data-tab="week" bindtap="onTab">周榜</view>
+    <view class="rank__tab rank__tab--disabled" data-tab="total" bindtap="onTab">
+      总榜 <text class="rank__soon">P1</text>
+    </view>
+  </view>
+  <view class="rank__period">{{weekText}}</view>
+
+  <view wx:if="{{loading}}" class="rank__skeleton">
+    <view class="skeleton" style="height:160rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:280rpx;margin-bottom:24rpx;"></view>
+    <view class="skeleton" style="height:96rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:96rpx;margin-bottom:16rpx;"></view>
+    <view class="skeleton" style="height:96rpx;"></view>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="rank__error">
+    <text>{{errorText}}</text>
+    <text class="link" bindtap="load">重试</text>
+  </view>
+
+  <block wx:else>
+    <view class="rank__me {{myRank ? 'rank__me--has' : ''}}">
+      <view class="rank__me-left">
+        <text class="rank__me-label">我的排名</text>
+        <text class="rank__me-rank num">{{myRankText}}</text>
+      </view>
+      <view wx:if="{{me}}" class="rank__me-right">
+        <text class="rank__me-score num">{{me.score}} 分</text>
+        <text class="rank__me-sub">{{me.games}} 场 · {{me.wins}} 胜</text>
+      </view>
+      <view wx:else class="rank__me-right">
+        <text class="rank__me-sub">本周还没成绩</text>
+        <text class="link rank__me-cta" bindtap="onCreate">去开一局</text>
+      </view>
+    </view>
+
+    <block wx:if="{{empty}}">
+      <view class="empty">
+        <view class="empty__emoji">🏁</view>
+        <view class="empty__title">本周还没有人上榜</view>
+        <view class="empty__desc">来当第一个</view>
+        <button class="btn btn--secondary rank__empty-btn" bindtap="onCreate">创建房间</button>
+      </view>
+    </block>
+
+    <block wx:else>
+      <podium wx:if="{{top.length >= 3}}" rankings="{{top}}" />
+      <view class="rank__list">
+        <rank-row
+          wx:for="{{top}}"
+          wx:key="uid"
+          rank="{{item.rank}}"
+          player="{{item}}"
+          highlight="{{me && item.uid === me.uid}}"
+        />
+      </view>
+    </block>
+
+    <view class="rank__rules" bindtap="onRules">榜单规则</view>
+  </block>
+</view>

@@ -1,0 +1,64 @@
+<view class="page rules">
+  <view class="rules__title">四个人，一道题，看谁手快</view>
+  <view class="rules__sub">不用匹配，喊上朋友就能开。</view>
+
+  <view class="card rules__card">
+    <view class="rules__heading">怎么玩</view>
+    <view class="rules__steps">
+      <view class="rules__step">
+        <text class="rules__num">1</text>
+        <view class="rules__step-text">
+          <view class="rules__step-title">房主建局</view>
+          <view class="rules__step-desc">选择题数与每题时长，生成 6 位房间码。</view>
+        </view>
+      </view>
+      <view class="rules__step">
+        <text class="rules__num">2</text>
+        <view class="rules__step-text">
+          <view class="rules__step-title">邀请 2–4 人</view>
+          <view class="rules__step-desc">分享卡片或口头报码，朋友点进来入座。</view>
+        </view>
+      </view>
+      <view class="rules__step">
+        <text class="rules__num">3</text>
+        <view class="rules__step-text">
+          <view class="rules__step-title">限时抢答</view>
+          <view class="rules__step-desc">点选项即提交，倒计时结束或全员答完即揭晓。</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card rules__card">
+    <view class="rules__heading">怎么计分</view>
+    <view class="rules__formula">答对 = 100 + 速度分（0–50）</view>
+    <view class="rules__desc">答错或未答 = 0 分。每题最高 150 分。</view>
+    <view class="rules__example">
+      <text>15 秒题，剩 12 秒答对</text>
+      <text class="rules__example-score">140 分</text>
+    </view>
+    <view class="rules__example">
+      <text>15 秒题，剩 2.4 秒答对</text>
+      <text class="rules__example-score">108 分</text>
+    </view>
+    <view class="rules__hint">网络抖动有 0.8 秒宽限，但宽限内提交速度分按 0 计。</view>
+  </view>
+
+  <view class="card rules__card">
+    <view class="rules__heading">怎么排名</view>
+    <view class="rules__line">总分高者在前</view>
+    <view class="rules__line">同分看答对题数</view>
+    <view class="rules__line">再同分看正确题用时</view>
+    <view class="rules__line">最后按加入房间的先后</view>
+  </view>
+
+  <view class="card rules__card">
+    <view class="rules__heading">榜单口径</view>
+    <view class="rules__line">周榜按自然周累计，周一 00:00 刷新。</view>
+    <view class="rules__line">只统计至少 2 人、正常结束的有效对局。</view>
+    <view class="rules__line">中途退出不计入周榜，但本局排名保留。</view>
+    <view class="rules__line">排行榜是站内榜，不是微信好友关系榜。</view>
+  </view>
+
+  <button class="btn btn--secondary rules__cta" bindtap="goCreate">去开一局</button>
+</view>

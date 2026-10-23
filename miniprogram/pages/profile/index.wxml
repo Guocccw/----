@@ -1,0 +1,96 @@
+<view class="page profile">
+  <view class="card profile__head">
+    <fruit-avatar avatar="{{user.avatar}}" size="{{128}}" ring="{{true}}" />
+    <view class="profile__info">
+      <view class="profile__name">{{user.nickName || '果友'}}</view>
+      <view class="profile__sub">累计 {{stats.games}} 局 · {{stats.wins}} 胜</view>
+      <view class="profile__sub">历史最佳 {{stats.bestScore}} 分</view>
+    </view>
+    <button class="mini-btn" bindtap="onEdit">编辑</button>
+  </view>
+
+  <view class="card profile__stats">
+    <view class="profile__stat">
+      <text class="profile__stat-num num">{{stats.games}}</text>
+      <text class="profile__stat-label">场次</text>
+    </view>
+    <view class="profile__stat">
+      <text class="profile__stat-num num">{{stats.wins}}</text>
+      <text class="profile__stat-label">胜场</text>
+    </view>
+    <view class="profile__stat">
+      <text class="profile__stat-num num">{{stats.rate}}%</text>
+      <text class="profile__stat-label">正确率</text>
+    </view>
+  </view>
+
+  <view class="card profile__list">
+    <view class="profile__row">
+      <text class="profile__icon">🔊</text>
+      <text class="profile__label">音效</text>
+      <switch checked="{{sound}}" color="#FF7A45" bindchange="onToggleSound" />
+    </view>
+    <view class="profile__row">
+      <text class="profile__icon">📳</text>
+      <text class="profile__label">振动</text>
+      <switch checked="{{vibration}}" color="#FF7A45" bindchange="onToggleVibration" />
+    </view>
+    <view class="profile__row" bindtap="onPrivacy">
+      <text class="profile__icon">🔒</text>
+      <text class="profile__label">隐私协议</text>
+      <text class="profile__arrow">›</text>
+    </view>
+    <view class="profile__row" bindtap="onTerms">
+      <text class="profile__icon">📄</text>
+      <text class="profile__label">用户协议</text>
+      <text class="profile__arrow">›</text>
+    </view>
+    <view class="profile__row" bindtap="onClear">
+      <text class="profile__icon">🧹</text>
+      <text class="profile__label">清除本地记录</text>
+      <text class="profile__arrow">›</text>
+    </view>
+    <view class="profile__row" bindtap="onRules">
+      <text class="profile__icon">📖</text>
+      <text class="profile__label">玩法说明</text>
+      <text class="profile__arrow">›</text>
+    </view>
+  </view>
+
+  <view class="profile__version">v0.1.0</view>
+
+  <view wx:if="{{editVisible}}" class="mask" bindtap="onCloseEdit"></view>
+  <view wx:if="{{editVisible}}" class="sheet">
+    <view class="sheet__handle"></view>
+    <view class="sheet__title">编辑资料</view>
+    <view class="sheet__avatar-row">
+      <image
+        wx:if="{{editAvatar && editAvatar.type === 'temp'}}"
+        class="sheet__avatar"
+        src="{{editAvatar.value}}"
+        mode="aspectFill"
+      />
+      <fruit-avatar wx:else avatar="{{editAvatar}}" size="{{128}}" />
+      <button class="mini-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">更换头像</button>
+    </view>
+    <view class="sheet__label">昵称</view>
+    <input
+      class="input sheet__input"
+      type="nickname"
+      value="{{editNick}}"
+      maxlength="12"
+      bindinput="onNickInput"
+      placeholder="2–12 个字符"
+    />
+    <view wx:if="{{editError}}" class="sheet__error">{{editError}}</view>
+    <button
+      class="btn btn--primary sheet__save {{saving ? 'btn--loading' : ''}}"
+      bindtap="onSave"
+      disabled="{{saving}}"
+    >
+      <view wx:if="{{saving}}" class="spinner"></view>
+      <text>{{saving ? '保存中…' : '保存'}}</text>
+    </button>
+    <view class="sheet__cancel" bindtap="onCloseEdit">取消</view>
+  </view>
+</view>

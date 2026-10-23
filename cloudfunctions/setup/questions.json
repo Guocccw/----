@@ -1,0 +1,403 @@
+[
+  {
+    "_id": "q_001",
+    "category": "general",
+    "stem": "下列哪种水果的维生素 C 含量通常最高？",
+    "options": [
+      "猕猴桃",
+      "苹果",
+      "香蕉",
+      "西瓜"
+    ],
+    "answerIndex": 0,
+    "explain": "猕猴桃的维生素 C 含量通常在水果中名列前茅。",
+    "difficulty": 1,
+    "tags": [
+      "水果",
+      "营养"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_002",
+    "category": "general",
+    "stem": "一年中哪个月份通常只有 28 天（平年）？",
+    "options": [
+      "1 月",
+      "2 月",
+      "4 月",
+      "6 月"
+    ],
+    "answerIndex": 1,
+    "explain": "平年 2 月有 28 天，闰年 29 天。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_003",
+    "category": "general",
+    "stem": "太阳从哪个方向升起？",
+    "options": [
+      "东方",
+      "西方",
+      "南方",
+      "北方"
+    ],
+    "answerIndex": 0,
+    "explain": "地球自西向东自转，太阳看起来从东方升起。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_004",
+    "category": "general",
+    "stem": "“三个臭皮匠，顶个诸葛亮”强调的是？",
+    "options": [
+      "人多力量大",
+      "个人英雄主义",
+      "沉默是金",
+      "熟能生巧"
+    ],
+    "answerIndex": 0,
+    "explain": "比喻人多智慧多，集体力量大。",
+    "difficulty": 1,
+    "tags": [
+      "俗语"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_005",
+    "category": "general",
+    "stem": "以下哪个不是编程语言？",
+    "options": [
+      "Python",
+      "Java",
+      "HTML",
+      "Go"
+    ],
+    "answerIndex": 2,
+    "explain": "HTML 是标记语言，不是编程语言。",
+    "difficulty": 2,
+    "tags": [
+      "科技"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_006",
+    "category": "general",
+    "stem": "水的沸点在标准大气压下是多少摄氏度？",
+    "options": [
+      "90℃",
+      "100℃",
+      "110℃",
+      "120℃"
+    ],
+    "answerIndex": 1,
+    "explain": "标准大气压下水的沸点是 100℃。",
+    "difficulty": 1,
+    "tags": [
+      "科学"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_007",
+    "category": "general",
+    "stem": "“但愿人长久，千里共婵娟”中的“婵娟”指？",
+    "options": [
+      "月亮",
+      "花朵",
+      "美人",
+      "星星"
+    ],
+    "answerIndex": 0,
+    "explain": "婵娟常用来代指月亮。",
+    "difficulty": 2,
+    "tags": [
+      "诗词"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_008",
+    "category": "general",
+    "stem": "微信聊天中“按住说话”发送的是什么？",
+    "options": [
+      "文字",
+      "语音",
+      "视频",
+      "文件"
+    ],
+    "answerIndex": 1,
+    "explain": "按住说话发送的是语音消息。",
+    "difficulty": 1,
+    "tags": [
+      "生活"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_009",
+    "category": "general",
+    "stem": "四人接力赛，最后一棒通常由谁跑？",
+    "options": [
+      "起跑最快的人",
+      "耐力最好的人",
+      "冲刺最快的人",
+      "个子最高的人"
+    ],
+    "answerIndex": 2,
+    "explain": "最后一棒通常安排冲刺能力最强的选手。",
+    "difficulty": 2,
+    "tags": [
+      "运动"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_010",
+    "category": "general",
+    "stem": "以下哪个是中国的传统节日？",
+    "options": [
+      "圣诞节",
+      "中秋节",
+      "感恩节",
+      "万圣节"
+    ],
+    "answerIndex": 1,
+    "explain": "中秋节是中国传统节日。",
+    "difficulty": 1,
+    "tags": [
+      "节日"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_011",
+    "category": "general",
+    "stem": "下列哪个不是一年四季之一？",
+    "options": [
+      "春季",
+      "夏季",
+      "雨季",
+      "冬季"
+    ],
+    "answerIndex": 2,
+    "explain": "一年通常分为春夏秋冬四季。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_012",
+    "category": "general",
+    "stem": "“画蛇添足”比喻什么？",
+    "options": [
+      "锦上添花",
+      "多此一举",
+      "雪中送炭",
+      "亡羊补牢"
+    ],
+    "answerIndex": 1,
+    "explain": "画蛇添足比喻做了多余的事，反而不好。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_013",
+    "category": "general",
+    "stem": "人体最大的器官是？",
+    "options": [
+      "心脏",
+      "皮肤",
+      "肝脏",
+      "肺"
+    ],
+    "answerIndex": 1,
+    "explain": "皮肤是人体面积最大的器官。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_014",
+    "category": "general",
+    "stem": "太阳系中离太阳最近的行星是？",
+    "options": [
+      "地球",
+      "火星",
+      "水星",
+      "金星"
+    ],
+    "answerIndex": 2,
+    "explain": "水星是离太阳最近的行星。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_015",
+    "category": "general",
+    "stem": "“1 米”等于多少厘米？",
+    "options": [
+      "10",
+      "100",
+      "1000",
+      "10000"
+    ],
+    "answerIndex": 1,
+    "explain": "1 米等于 100 厘米。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_016",
+    "category": "general",
+    "stem": "以下哪种动物是哺乳动物？",
+    "options": [
+      "鲨鱼",
+      "海豚",
+      "企鹅",
+      "鳄鱼"
+    ],
+    "answerIndex": 1,
+    "explain": "海豚是哺乳动物，用肺呼吸。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_017",
+    "category": "general",
+    "stem": "中国面积最大的省级行政区是？",
+    "options": [
+      "新疆",
+      "西藏",
+      "内蒙古",
+      "青海"
+    ],
+    "answerIndex": 0,
+    "explain": "新疆维吾尔自治区面积最大。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_018",
+    "category": "general",
+    "stem": "彩虹通常有几种颜色？",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answerIndex": 2,
+    "explain": "彩虹通常分为红橙黄绿蓝靛紫七色。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_019",
+    "category": "general",
+    "stem": "“破釜沉舟”与哪位历史人物有关？",
+    "options": [
+      "刘邦",
+      "项羽",
+      "韩信",
+      "曹操"
+    ],
+    "answerIndex": 1,
+    "explain": "项羽在巨鹿之战中破釜沉舟。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  },
+  {
+    "_id": "q_020",
+    "category": "general",
+    "stem": "电脑中 1 KB 通常等于多少字节？",
+    "options": [
+      "100",
+      "512",
+      "1024",
+      "2048"
+    ],
+    "answerIndex": 2,
+    "explain": "计算机中 1 KB 通常为 1024 字节。",
+    "difficulty": 1,
+    "tags": [
+      "常识"
+    ],
+    "enabled": true,
+    "source": "internal",
+    "version": 1
+  }
+]
