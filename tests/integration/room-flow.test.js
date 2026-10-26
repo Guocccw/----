@@ -223,6 +223,17 @@ test('云函数房间主流程（内存数据库）', async () => {
     const b1 = await room.answer({ roomCode: code, roundIndex: 0, choice: 0 }, ctxB);
     assert.equal(b1.view.round.correctIndex, 0);
 
+    // 揭晓快照里两个人的对错/加分一致：客户端据此算出的「本轮冠军」才会是同一个
+    const viewA = (await room.state({ roomCode: code }, ctxA)).view;
+    const viewB = (await room.state({ roomCode: code }, ctxB)).view;
+    const gains = (v) =>
+      v.round.perPlayer
+        .map((p) => [p.playerId, p.correct, p.gain])
+        .sort((x, y) => (x[0] < y[0] ? -1 : 1));
+    assert.equal(viewA.round.perPlayer.length, 2);
+    assert.ok(viewA.round.perPlayer.every((p) => p.correct === true && p.gain > 0));
+    assert.deepEqual(gains(viewA), gains(viewB));
+
     fakeNow = b1.view.round.revealEndsAt + 400;
     let current = await room.advance({ roomCode: code, roundIndex: 0 }, ctxA);
     assert.equal(current.view.round.index, 1);

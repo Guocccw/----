@@ -9,6 +9,21 @@
 
 > 产品、技术与 UI 设计分别见：
 > [需求文档](docs/需求文档.md) · [实施文档](docs/实施文档.md) · [UI 设计文档](docs/UI设计文档.md)
+>
+> Canvas 版视觉基调见 **[果汁街机](docs/UI-果汁街机.md)**（v0.2，2026-10-26）。
+>
+> 声音方案（选曲、事件映射、授权与验收）见 **[音效与音乐](docs/音效与音乐.md)**（v1.0，2026-10-26）。
+
+## UI 基调：果汁街机
+
+![果汁街机](docs/ui/board.png)
+
+奶油纸底、深可可粗描边、实心投影、歪一点的小徽章；答对撒花、倒计时转莓色。
+所有视觉元素都用 Canvas 2D 画，不引入位图资源。
+
+- 设计规范：[`docs/UI-果汁街机.md`](docs/UI-果汁街机.md)
+- 页面截图：[`docs/ui/`](docs/ui/)
+- 本地预览台：[`preview/README.md`](preview/README.md)
 
 ## 当前实现
 
@@ -18,10 +33,11 @@
   - 静默登录、默认水果头像/昵称、昵称/头像编辑。
   - 首页创建/加入、6 位房间码、分享卡片。
   - 等待页座位、房主开始、离开、房主转移、心跳/离线状态。
-  - 对局：服务端计时、点击即提交、全员/超时结算、3 秒揭晓、进入下一题。
+  - 对局：服务端计时、点击即提交、全员/超时结算、3 秒揭晓（本轮冠军 0.3 秒弹入 + 一句嘲讽）、进入下一题。
   - 结算：领奖台、排名、正确率/平均用时、再来一局、晒战绩。
   - 周榜：Top 10 展示、我的排名、本周周期。
   - 断线恢复、轮询退避、房间过期清理。
+- 声音：3 首循环 BGM（菜单 / 对局 / 结算）+ 6 个音效，随页面自动切换，开关本地记忆。
 - 题库：20 道开发占位题，附 `scripts/questions.seed.json`，可覆盖 10/15/20 题配置。
 - 领域与房间流程测试：`npm test`。
 
@@ -33,8 +49,11 @@ minigame/               当前小游戏客户端（编译入口）
   game.json             小游戏配置
   js/app.js             状态、路由、网络、轮询
   js/screens.js         Canvas 页面绘制
-  js/ui.js              Canvas 基础绘制
-  js/core.js            api / clock / 主题 / 工具
+  js/ui.js              Canvas 绘制系统（面板 / 按钮 / 徽章 / 吉祥物 / 计时条）
+  js/core.js            api / clock / 色板 / 工具
+  js/audio.js           音效与 BGM（InnerAudioContext：解锁 / 切曲 / 音效池 / 开关）
+  assets/audio/         9 个 mp3：3 首循环 BGM + 6 个音效
+preview/                本地 Canvas 预览台（浏览器里跑 ui/screens，出截图）
 miniprogram/            旧版 WXML 小程序（参考，不再编译）
 cloudfunctions/
   api/                  业务云函数（auth / room / rank / event）
@@ -45,6 +64,8 @@ tests/domain/           计分、排名、周 Key、结算单测
 tests/integration/      内存数据库房间主流程
 tests/canvas/           Canvas 页面渲染冒烟测试
 docs/                   需求 / 实施 / UI 文档
+  UI-果汁街机.md        Canvas 版视觉基调与组件规范
+  ui/                   定稿页面截图
 ```
 
 ## 快速开始
@@ -144,7 +165,15 @@ event_batches
 npm test
 ```
 
-会运行 `tests/domain` 的纯函数单测、`tests/integration` 的内存数据库房间主流程（创建→加入→10 题→结算→再来一局→离开），以及 `tests/canvas` 的 Canvas 页面渲染冒烟测试。
+会运行 `tests/domain` 的纯函数单测、`tests/integration` 的内存数据库房间主流程（创建→加入→10 题→结算→再来一局→离开），以及 `tests/canvas` 的 Canvas 页面渲染冒烟测试（375×812 / 320×568 / 390×844 三种尺寸）。
+
+### 本地预览 UI
+
+```bash
+npm run preview        # http://127.0.0.1:8123/preview/index.html
+```
+
+可以切页面、切尺寸、看总览；无头截图见 [`preview/README.md`](preview/README.md)。预览台只加载 `core/ui/screens`，不跑网络与轮询。
 
 ## 接口
 
@@ -181,10 +210,10 @@ event.report
 ## 重要说明
 
 - **小游戏客户端**：首版为降低构建复杂度使用 Canvas + JavaScript；原 WXML 小程序版本保留在 `miniprogram/` 供参考。
-- **UI 差异**：`docs/UI设计文档.md` 描述的是 WXML 小程序版；Canvas 版沿用同一套颜色、字号、按钮和页面结构，但布局由 Canvas 绘制，不再有原生组件。
+- **UI 基调**：Canvas 版是「果汁街机」——奶油纸底 + 深可可描边 + 实心投影 + 贴纸徽章，详见 `docs/UI-果汁街机.md`；`docs/UI设计文档.md` 的文案、页面结构与交互原则继续有效，视觉细节点以新文档为准。
 - **排行榜是站内榜**：小游戏没有开放数据域，无法读取微信好友成绩；房间内才是好友对战。
 - **统计补偿**：`applyGameStats` 为尽力写入，失败由 `cron` 重试；极端情况下可能重复累计，P1 可改为完整事务。
-- **未实现（P1/P2）**：踢人、总榜、音效资源、隐私协议法务定稿、深色模式、头像图片内容安全、同群榜。
+- **未实现（P1/P2）**：踢人、总榜、振动开关、隐私协议法务定稿、深色模式、头像图片内容安全、同群榜。
 - **隐私**：上线前请替换 `minigame/js/screens.js` 中的隐私/协议文案，并在小游戏后台配置用户隐私保护指引。
 
 ## 部署前检查

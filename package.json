@@ -2,8 +2,10 @@
   "name": "guoguo-quiz",
   "version": "0.1.0",
   "private": true,
-  "description": "果果答题 · 微信小程序熟人房间答题",
+  "description": "果果答题 · 微信小游戏熟人房间答题",
   "scripts": {
-    "test": "node --test tests/domain/*.test.js tests/integration/*.test.js tests/canvas/*.test.js"
+    "test": "node --test tests/domain/*.test.js tests/integration/*.test.js tests/canvas/*.test.js",
+    "preview": "python3 -m http.server 8123 --bind 127.0.0.1",
+    "preview:shots": "node preview/shot.mjs"
   }
 }

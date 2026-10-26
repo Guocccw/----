@@ -4,3 +4,4 @@ cloudfunctions/**/node_modules/
 project.private.config.json
 .DS_Store
 *.log
+.preview-out/
