@@ -1,6 +1,7 @@
 const core = require('./core');
 const ui = require('./ui');
 const screens = require('./screens');
+const audio = require('./audio');
 
 const ROOM_SCREENS = ['room', 'game', 'result'];
 
@@ -15,10 +16,15 @@ class App {
     this.heartbeatTimer = null;
     this.settleBusy = false;
     this.advanceBusy = false;
+    this.pressed = null;
+    this.pressTimer = null;
     this.returnScreen = 'home';
     this.hidden = false;
+    this.audio = audio;
+    this.audioCue = '';
     this.state = {
       screen: 'loading',
+      screenAt: Date.now(),
       user: null,
       activeRoom: null,
       view: null,
@@ -33,6 +39,8 @@ class App {
       privacyTab: 'privacy',
       submitting: false,
       pendingChoice: null,
+      // 本地第一次看到「本题揭晓」的时刻：冠军贴纸的 0.3 秒弹跳从这里起算
+      revealAt: 0,
     };
   }
 
@@ -40,6 +48,8 @@ class App {
     this.canvas = wx.createCanvas();
     const info = core.getWindowInfo();
     ui.init(this.canvas, info);
+    audio.init();
+    audio.setScene(this.state.screen);
     this.bindEvents();
     this.loop();
     this.boot();
@@ -94,7 +104,18 @@ class App {
     wx.onTouchStart((e) => {
       const t = e.touches && e.touches[0];
       if (!t) return;
+      // 第一次手势才允许出声（iOS 自动播放限制）
+      audio.unlock();
       this.touch = { x: t.clientX, y: t.clientY, at: Date.now() };
+      // 按下反馈：让贴纸按钮真的有“压下去”的手感
+      for (let i = this.hits.length - 1; i >= 0; i--) {
+        const h = this.hits[i];
+        if (t.clientX >= h.x && t.clientX <= h.x + h.w && t.clientY >= h.y && t.clientY <= h.y + h.h) {
+          this.pressed = { id: h.id, at: Date.now() };
+          if (wx.vibrateShort) wx.vibrateShort({ type: 'light' });
+          break;
+        }
+      }
     });
 
     wx.onTouchEnd((e) => {
@@ -106,10 +127,14 @@ class App {
       const moved = Math.sqrt(dx * dx + dy * dy);
       const tap = moved < 14;
       this.touch = null;
+      if (this.pressTimer) clearTimeout(this.pressTimer);
+      this.pressTimer = setTimeout(() => { this.pressed = null; }, 110);
       if (!tap) return;
       for (let i = this.hits.length - 1; i >= 0; i--) {
         const h = this.hits[i];
         if (t.clientX >= h.x && t.clientX <= h.x + h.w && t.clientY >= h.y && t.clientY <= h.y + h.h) {
+          // 选项点击由 answer() 放「提交」音，其他按钮统一「咔哒」
+          if (h.id !== 'game.answer') audio.play('tap');
           this.action(h.id, h.payload);
           return;
         }
@@ -118,6 +143,7 @@ class App {
 
     wx.onShow((res) => {
       this.hidden = false;
+      audio.resume();
       const q = (res && res.query) || {};
       if (q.code && /^[1-9]\d{5}$/.test(String(q.code)) && this.state.user && this.state.screen === 'home') {
         this.joinRoom(String(q.code));
@@ -130,8 +156,17 @@ class App {
 
     wx.onHide(() => {
       this.hidden = true;
+      audio.suspend();
       this.stopRoom();
     });
+
+    // 来电、语音通话等系统中断结束后，把 BGM 接回来
+    if (wx.onAudioInterruptionBegin) wx.onAudioInterruptionBegin(() => audio.suspend());
+    if (wx.onAudioInterruptionEnd) {
+      wx.onAudioInterruptionEnd(() => {
+        if (!this.hidden) audio.resume();
+      });
+    }
   }
 
   loop() {
@@ -195,6 +230,7 @@ class App {
     const view = this.state.view;
     if (!view || !view.round) return;
     const round = view.round;
+    this.tickSounds();
     const now = this.now();
     const settled = round.correctIndex !== null && typeof round.correctIndex !== 'undefined';
     if (!settled && (round.answeredCount >= round.activeCount || now >= round.endsAt + 1000)) {
@@ -205,10 +241,64 @@ class App {
     }
   }
 
+  /* 倒计时 / 最后三秒：每个整秒一声 tick，靠 audioCue 去重 */
+  tickSounds() {
+    const view = this.state.view;
+    if (!view || !view.round) return;
+    const round = view.round;
+    const phase = this.phase();
+    let cue = '';
+    if (phase === 'countdown') {
+      const n = Math.ceil((round.startedAt - this.now()) / 1000);
+      cue = round.index + ':cd' + n;
+    } else if (phase === 'answering') {
+      const n = Math.ceil(this.remaining() / 1000);
+      if (n >= 1 && n <= 3) cue = round.index + ':as' + n;
+    }
+    if (!cue || cue === this.audioCue) return;
+    this.audioCue = cue;
+    audio.play('tick');
+  }
+
+  isRevealed(round) {
+    return !!round && round.correctIndex !== null && typeof round.correctIndex !== 'undefined';
+  }
+
+  /* 记录「我刚看到本题揭晓」的时刻；轮询重复下发同一题时保持不变 */
+  markReveal(prev, view) {
+    const after = view && view.round;
+    if (!this.isRevealed(after)) {
+      this.state.revealAt = 0;
+      return;
+    }
+    const before = prev && prev.round;
+    const same = before && before.index === after.index && this.isRevealed(before);
+    if (!same) this.state.revealAt = Date.now();
+  }
+
+  /* 揭晓的那一下：答对给 chime（有加分再叠金币），答错/漏答给低音 chime */
+  revealSounds(prev, view) {
+    const after = view && view.round;
+    if (!after || !this.isRevealed(after)) return;
+    const before = prev && prev.round;
+    if (before && before.index === after.index && this.isRevealed(before)) return;
+    if (after.myCorrect === true) {
+      audio.play('correct');
+      if (after.myGain > 0) setTimeout(() => audio.play('coin'), 260);
+    } else {
+      audio.play('wrong');
+    }
+  }
+
   go(screen, keepRoom) {
+    const prev = this.state.screen;
+    if (prev !== screen) this.state.screenAt = Date.now();
     this.state.screen = screen;
     this.state.joinError = '';
     if (!keepRoom && ROOM_SCREENS.indexOf(screen) < 0) this.stopRoom();
+    if (screen !== 'game') this.audioCue = '';
+    audio.setScene(screen);
+    if (screen === 'result' && prev !== 'result') audio.play('coin');
   }
 
   async openRoom(code) {
@@ -229,6 +319,7 @@ class App {
 
   applyRoom(view) {
     if (!view) return;
+    const prev = this.state.view;
     this.state.view = view;
     this.state.roomCode = view.roomCode;
     this.state.activeRoom = {
@@ -237,6 +328,8 @@ class App {
       status: view.status,
     };
     this.state.loading = false;
+    this.markReveal(prev, view);
+    this.revealSounds(prev, view);
     let target = 'room';
     if (view.status === 'playing') target = 'game';
     else if (view.status === 'settled') target = 'result';
@@ -358,6 +451,8 @@ class App {
     const view = this.state.view;
     if (!view || !view.round) return;
     if (typeof view.round.myChoice === 'number') return;
+    // 点击即提交：先给声音反馈，不等网络回来
+    audio.play('submit');
     this.state.submitting = true;
     this.state.pendingChoice = index;
     try {
@@ -478,6 +573,18 @@ class App {
     }
   }
 
+  soundState() {
+    return audio.getState();
+  }
+
+  toggleSound(kind) {
+    const on = kind === 'music' ? audio.toggleMusic() : audio.toggleSfx();
+    // 打开音效时立刻放一声，让开关「听得见」
+    if (kind === 'sfx' && on) audio.play('coin');
+    core.toast((kind === 'music' ? '背景音乐' : '音效') + (on ? '已开' : '已关'));
+    return on;
+  }
+
   copyCode() {
     if (!this.state.roomCode) return;
     wx.setClipboardData({
@@ -586,7 +693,11 @@ class App {
       'create.submit': () => this.createRoom(),
       'join.back': () => this.go('home'),
       'join.key': () => {
-        if (this.state.joinCode.length < 6) this.state.joinCode += String(payload);
+        const digit = String(payload == null ? '' : payload).replace(/\D/g, '');
+        if (!digit) return;
+        if (this.state.joinCode.length < 6) {
+          this.state.joinCode = (this.state.joinCode + digit).slice(0, 6);
+        }
         this.state.joinError = '';
       },
       'join.del': () => {
@@ -609,6 +720,8 @@ class App {
       'rank.rules': () => this.openRules('rank'),
       'profile.nick': () => this.editNick(),
       'profile.avatar': () => this.editAvatar(),
+      'profile.music': () => this.toggleSound('music'),
+      'profile.sfx': () => this.toggleSound('sfx'),
       'profile.rules': () => this.openRules('profile'),
       'profile.privacy': () => this.openPrivacy('profile'),
       'rules.back': () => this.go(this.returnScreen || 'home'),
