@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>果果答题 · Canvas Preview</title>
+<style>
+  :root {
+    --paper: #fff4e3;
+    --ink: #2e1b10;
+    --ink2: #6b4a35;
+    --line: rgba(46, 27, 16, 0.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #efe3d3; }
+  body {
+    font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 20px 60px;
+  }
+  body.clean { padding: 0; background: var(--paper); display: block; }
+  body.clean .toolbar, body.clean .meta { display: none; }
+  body.board { padding: 28px; align-items: flex-start; }
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    width: min(100%, 900px);
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    background: #fffdf7;
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: 0 5px 0 var(--ink);
+    position: sticky;
+    top: 10px;
+    z-index: 9;
+  }
+  .toolbar .label { font-size: 12px; font-weight: 700; color: var(--ink2); margin: 0 6px 0 4px; }
+  .toolbar button {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 5px 11px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--ink);
+  }
+  .toolbar button:hover { background: #ffe8cc; }
+  .toolbar button.on { background: #ff7a2f; }
+  .toolbar select {
+    font: inherit; font-size: 12px; font-weight: 700; color: var(--ink);
+    background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 5px 8px;
+  }
+  .stage {
+    position: relative;
+    width: 375px;
+    height: 812px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 34px;
+    box-shadow: 0 10px 0 var(--ink), 0 30px 44px rgba(46, 27, 16, 0.22);
+    overflow: hidden;
+    flex: none;
+  }
+  body.clean .stage { border: 0; border-radius: 0; box-shadow: none; }
+  .stage canvas { display: block; width: 375px; height: 812px; }
+  .meta { margin-top: 14px; font-size: 12px; color: var(--ink2); font-weight: 600; }
+  body.board .stage { display: none; }
+  .board-wrap { display: flex; flex-wrap: wrap; gap: 26px; max-width: 1400px; }
+  .cell { display: flex; flex-direction: column; gap: 8px; }
+  .cell .cap {
+    font-size: 13px; font-weight: 800; letter-spacing: .04em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cell .cap em {
+    font-style: normal; font-size: 10px; font-weight: 700; color: var(--ink2);
+    background: rgba(46,27,16,.06); padding: 2px 7px; border-radius: 999px;
+  }
+  .cell canvas {
+    display: block; border: 2px solid var(--ink); border-radius: 18px;
+    box-shadow: 0 6px 0 var(--ink);
+    background: var(--paper);
+  }
+  .boot { font-size: 13px; color: var(--ink2); }
+</style>
+</head>
+<body>
+  <div class="toolbar" id="toolbar">
+    <span class="label">Canvas Preview</span>
+    <span id="nav"></span>
+    <span class="label">尺寸</span>
+    <select id="device">
+      <option value="375x812">375 × 812</option>
+      <option value="390x844">390 × 844</option>
+      <option value="360x780">360 × 780</option>
+      <option value="320x568">320 × 568（小屏）</option>
+    </select>
+    <button id="boardBtn">总览</button>
+  </div>
+  <div class="stage" id="stage"><canvas id="screen"></canvas></div>
+  <div class="board-wrap" id="board"></div>
+  <div class="meta" id="meta">loading…</div>
+  <script src="./fixtures.js"></script>
+  <script src="./preview.js"></script>
+</body>
+</html>
